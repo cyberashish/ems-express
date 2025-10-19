@@ -10,7 +10,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from 'cookie-parser';
-import "./config/googleStrategy.ts"
+// import "./config/googleStrategy.ts"
 
 
 const server = express();
