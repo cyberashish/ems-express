@@ -1,0 +1,66 @@
+import express from "express";
+import { getAuthenticatedUser, LoginUser, LogoutUser, RegisterUser, resetPassword, sendResetLink, updatePassword } from "../../controllers/user.controller.ts";
+import passport from "passport";
+import { verifyToken } from "../../middlewares/user.middleware.ts";
+import { ApiResponse } from "../utils/ApiResponse.ts";
+import { ApiError } from "../utils/ApiError.ts";
+import { employeeProfile } from "../../controllers/employee.controller.ts";
+import { prisma } from "../utils/client.ts";
+import jwt from "jsonwebtoken";
+
+const userRouter = express.Router();
+
+userRouter
+.get("/data" , (req,res) => {
+    res.json({type:"Get/new"})
+})
+.post("/register" , RegisterUser)
+.post("/login" , LoginUser)
+.get("/logout" , LogoutUser)
+
+// Social Auth
+.get('/auth/google',
+    passport.authenticate('google', {session: false, scope: ['profile' , 'email'],prompt: "consent", }))
+  
+.get('/api/auth/callback/google', 
+    passport.authenticate('google', {session: false, failureRedirect: `${process.env.FRONTEND_HOST}/auth/login` }),
+   async (req,res) => {
+        let userData:any = req.user;
+        console.log(userData)
+      if (!userData.allInfo.email) {
+        return res.redirect(`${process.env.FRONTEND_HOST}/auth/login?error=no_email`);
+      }
+
+const accessToken = jwt.sign(
+    { fullname:userData.allInfo.name , email: userData.allInfo.email },
+    process.env.ACCESS_TOKEN_SECRET_KEY!,
+    { expiresIn: "1d" } 
+  );
+
+  const refreshToken = jwt.sign(
+    { fullname:userData.allInfo.name , email: userData.allInfo.email },
+    process.env.REFRESH_TOKEN_SECRET_KEY!,
+    { expiresIn: "7d" } 
+  );
+
+        res.cookie("accessToken" , accessToken , {
+            httpOnly: true,
+            secure:true, sameSite:'none'
+        });
+        res.cookie("refreshToken" , refreshToken , {
+            httpOnly: true,
+            secure:true, sameSite:'none'
+        });
+        res.redirect(`${process.env.FRONTEND_HOST}/dashboard`);
+    }
+    )
+.get('/token/get-user' , getAuthenticatedUser)
+.post("/forgot-password", sendResetLink)
+.post("/reset-password/:token", resetPassword)
+.put("/user/update-password" , updatePassword)
+// .post("/add-employee" , addEmployee)
+    
+
+
+
+export {userRouter}
