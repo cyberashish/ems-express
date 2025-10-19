@@ -1,17 +1,17 @@
 
-import { connectDB } from "./utils/client.ts";
+// import { connectDB } from "./utils/client.ts";
 import dotenv from "dotenv";
 
-import "./jobs/resetLeaves.ts";
+// import "./jobs/resetLeaves.ts";
 
 import express from "express";
-import { userRouter } from "./routes/user.routes.ts";
+// import { userRouter } from "./routes/user.routes.ts";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from 'cookie-parser';
 import "./config/googleStrategy.ts"
-import { employeeRouter } from "./routes/employee.routes.ts";
+
 
 const server = express();
 
