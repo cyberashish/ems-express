@@ -3,6 +3,7 @@
 import dotenv from "dotenv";
 
 // import "./jobs/resetLeaves.ts";
+// import "./config/googleStrategy.ts"
 
 import express from "express";
 // import { userRouter } from "./routes/user.routes.ts";
@@ -10,7 +11,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from 'cookie-parser';
-// import "./config/googleStrategy.ts"
+
 
 
 const server = express();
