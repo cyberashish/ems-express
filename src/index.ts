@@ -1,9 +1,7 @@
-import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 import { userRouter } from "./routes/user.routes.js";
 import { employeeRouter } from "./routes/employee.routes.js";
 
@@ -17,21 +15,16 @@ app.use(
     credentials: true,
   })
 );
-
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Routes
-app.use("/", userRouter);
-app.use("/employee", employeeRouter);
-
-app.get("/health", (_, res) => {
-  res.json({ status: "ok", time: new Date().toISOString() });
+app.get("/", (_, res) => {
+  res.json({ message: "🚀 Express API working on Vercel!" });
 });
 
-// Export for Vercel
+app.use("/users", userRouter);
+app.use("/employee", employeeRouter);
+
+// ❌ Do NOT use app.listen() on Vercel
 export default app;
