@@ -1,10 +1,10 @@
 import { Request, Response } from "express"
-import { ApiError } from "../src/utils/ApiError.ts"
-import { prisma } from "../src/utils/client.ts";
-import { ApiResponse } from "../src/utils/ApiResponse.ts";
-import { generateSimplePassword } from "../src/utils/generatePassword.ts";
+import { ApiError } from "../utils/ApiError"
+import { prisma } from "../utils/client";
+import { ApiResponse } from "../utils/ApiResponse";
+import { generateSimplePassword } from "../utils/generatePassword";
 import bcrypt, { genSalt } from "bcryptjs";
-import { generateEmployeeId } from "../src/utils/generateEmployeeId.ts";
+import { generateEmployeeId } from "../utils/generateEmployeeId";
 
 export const addEmployee = async (req:Request , res:Response) => {
   try{
@@ -29,7 +29,7 @@ export const addEmployee = async (req:Request , res:Response) => {
      res.status(422).json(new ApiError(401 , "Please provide all valid field!"))
     }
 
-  }catch(error){
+  }catch(error:any){
     console.log(error);
    res.status(401).json(new ApiError(401 , error.message))
   }
@@ -50,7 +50,7 @@ export const editEmployee = async (req:Request , res:Response) => {
     }else{
       res.status(422).json(new ApiError(422,"Please provide all valid field data !"))
     }
-   }catch(error){
+   }catch(error:any){
     console.log(error);
     res.status(500).json(new ApiError(500,error.message))
    }
@@ -69,7 +69,7 @@ export const employeeProfile = async (req:Request,res:Response) => {
        }else{
         res.status(422).json(new ApiError(422 , "Please provide employee id"))
        }
-    }catch(error){
+    }catch(error:any){
       res.status(500).json(new ApiError(500,error.message))
     }
 }
@@ -78,7 +78,7 @@ export const getAllEmployees = async (req:Request , res:Response) => {
   try{
     const allEmployees = await prisma.employee.findMany();
     res.status(200).json(new ApiResponse(200 , allEmployees , "Successfully fetched all employess!"))
-  }catch(error){
+  }catch(error:any){
     res.status(500).json(new ApiError(500,error.message))
   }
 }
@@ -97,7 +97,7 @@ export const deleteEmployee = async (req:Request,res:Response) => {
       res.status(422).json(new ApiError(422,"Please provide all valid field data !"))
     }
 
-  }catch(error){
+  }catch(error:any){
     res.status(500).json(new ApiError(500,error.message))
   }
 }
@@ -115,7 +115,7 @@ export const addEmployeesRequest = async (req:Request,res:Response) => {
      }else{
       res.status(422).json(new ApiError(422 , "Please provide all valid fields!"))
      }
-   }catch(error){
+   }catch(error:any){
     res.status(500).json(new ApiError(500,error.message))
    }
 }
@@ -124,7 +124,7 @@ export const getAllEmployeesRequest = async (req:Request,res:Response) => {
   try{
      const allRequests = await prisma.request.findMany();
      res.status(200).json(new ApiResponse(200 , allRequests , "Successfully fetched all requests!"));
-  }catch(error){
+  }catch(error:any){
     console.log(error);
     res.status(500).json(new ApiError(500,error.message))
   }
@@ -143,13 +143,13 @@ export const updateEmployeeRequest = async (req:Request,res:Response) => {
          data:{...toUpdateData}
         });
         res.status(200).json(new ApiResponse(200 , updatedRequest , "Successfully updated request !"))
-       } catch (error) {
+       } catch (error:any) {
         res.status(500).json(new ApiError(500,error.message))
        }
      }else{
       res.status(422).json(new ApiError(422 , "Please provide valid requestId!"))
      }
-  }catch(error){
+  }catch(error:any){
     res.status(500).json(new ApiError(500,error.message))
   }
 }
@@ -164,13 +164,13 @@ export const getEmployeeByEmail = async (req:Request,res:Response) => {
          }
         })
         res.status(200).json(new ApiResponse(200 , employee , "Successfully updated request !"))
-       } catch (error) {
+       } catch (error:any) {
         res.status(500).json(new ApiError(500,error.message))
        }
      }else{
       res.status(422).json(new ApiError(422 , "Please provide valid requestId!"))
      }
-  }catch(error){
+  }catch(error:any){
     res.status(500).json(new ApiError(500,error.message))
   }
 }
@@ -217,7 +217,7 @@ export const updateEmployeeLeave = async (req:Request , res:Response) => {
     }else{
       res.status(422).json(new ApiError(422, "Please provide valid details!"));
     }
-  }catch(error){
+  }catch(error:any){
     res.status(500).json(new ApiError(500,error.message));
   }
 }
@@ -254,7 +254,7 @@ export const createAdminNotification = async (req:Request , res:Response) => {
       try {
         const notification = await prisma.notification.create({
           data:{
-            userId: admin.id,
+            userId: admin?.id!,
             title,
             message,
             type,
@@ -262,7 +262,7 @@ export const createAdminNotification = async (req:Request , res:Response) => {
           }
         })
         res.status(200).json(new ApiResponse(200 , notification, "Successfully fetch all admins !"))
-      } catch (error) {
+      } catch (error:any) {
         res.status(500).json(new ApiError(500 , "Internal server error!"));
       }
     }else{
@@ -283,7 +283,7 @@ export const updateAdminNotification = async (req:Request , res:Response) => {
        }
       });
       res.status(200).json(new ApiResponse(200 , updatedNotificatiion , "Successfully updated notification!"));
-     } catch (error) {
+     } catch (error:any) {
       res.status(500).json(new ApiError(500 , "Internal Server Error!"))
      }
      
@@ -301,11 +301,11 @@ export const getAllAdminNotifications = async (req:Request , res:Response) => {
     });
     const allNotifications = await prisma.notification.findMany({
       where:{
-        userId:admin.id
+        userId:admin?.id!
       }
     });
     res.status(200).json(new ApiResponse(200 , allNotifications , "Successfully fetched all notifications!"));
-  }catch(error){
+  }catch(error:any){
     res.status(500).json(new ApiError(500 , "Internal server error!"));
   }
 }
@@ -322,7 +322,7 @@ export const createEmployeeNotification = async (req:Request , res:Response) => 
     try {
       const notification = await prisma.notification.create({
         data:{
-          userId: user.id,
+          userId: user?.id!,
           title,
           message,
           type,
@@ -330,7 +330,7 @@ export const createEmployeeNotification = async (req:Request , res:Response) => 
         }
       })
       res.status(200).json(new ApiResponse(200 , notification, "Successfully fetch all admins !"))
-    } catch (error) {
+    } catch (error:any) {
       res.status(500).json(new ApiError(500 , "Internal server error!"));
     }
   }else{
@@ -351,7 +351,7 @@ export const updateEmployeeNotification = async (req:Request , res:Response) => 
       }
      });
      res.status(200).json(new ApiResponse(200 , updatedNotificatiion , "Successfully updated notification!"));
-    } catch (error) {
+    } catch (error:any) {
      res.status(500).json(new ApiError(500 , "Internal Server Error!"))
     }
     
@@ -374,11 +374,11 @@ export const getAllEmployeeNotifications = async (req:Request , res:Response) =>
       console.log(user,"My User")
       const allNotifications = await prisma.notification.findMany({
         where:{
-          userId:user.id
+          userId:user?.id
         }
       });
       res.status(200).json(new ApiResponse(200 , allNotifications , "Successfully fetched all notifications!"));
-    }catch(error){
+    }catch(error:any){
       console.log(error);
       res.status(500).json(new ApiError(500 , "Internal server error!"));
     }

@@ -1,5 +1,5 @@
 import express from "express";
-import { addEmployee, addEmployeesRequest, createAdminNotification, createEmployeeNotification, deleteEmployee, editEmployee, employeeProfile, getAllAdminNotifications, getAllEmployeeNotifications, getAllEmployees, getAllEmployeesRequest, getEmployeeByEmail, getEmployeeRequestInfo, updateAdminNotification, updateEmployeeLeave, updateEmployeeNotification, updateEmployeeRequest } from "../../controllers/employee.controller.ts";
+import { addEmployee, addEmployeesRequest, createAdminNotification, createEmployeeNotification, deleteEmployee, editEmployee, employeeProfile, getAllAdminNotifications, getAllEmployeeNotifications, getAllEmployees, getAllEmployeesRequest, getEmployeeByEmail, getEmployeeRequestInfo, updateAdminNotification, updateEmployeeLeave, updateEmployeeNotification, updateEmployeeRequest } from "../controllers/employee.controller";
 
 const employeeRouter = express.Router();
 

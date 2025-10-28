@@ -1,12 +1,11 @@
 import express from "express";
-import { getAuthenticatedUser, LoginUser, LogoutUser, RegisterUser, resetPassword, sendResetLink, updatePassword } from "../../controllers/user.controller.ts";
 import passport from "passport";
-import { verifyToken } from "../../middlewares/user.middleware.ts";
-import { ApiResponse } from "../utils/ApiResponse.ts";
-import { ApiError } from "../utils/ApiError.ts";
-import { employeeProfile } from "../../controllers/employee.controller.ts";
-import { prisma } from "../utils/client.ts";
+import { ApiResponse } from "../utils/ApiResponse";
+import { ApiError } from "../utils/ApiError";
+import { prisma } from "../utils/client";
 import jwt from "jsonwebtoken";
+import { getAuthenticatedUser, LoginUser, LogoutUser, RegisterUser, resetPassword, sendResetLink, updatePassword } from "../controllers/user.controller";
+;
 
 const userRouter = express.Router();
 

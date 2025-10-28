@@ -3,7 +3,7 @@ class ApiError extends Error{
     message:string;
     errors:any;
     constructor(
-        statusCode,
+        statusCode: number,
         message="Something went wrong",
         errors=[],
         stack=""

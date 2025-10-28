@@ -1,11 +1,11 @@
 import express from "express";
-import { userRouter } from "./routes/user.routes.ts";
+import { userRouter } from "./routes/user.routes";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from 'cookie-parser';
 import "./config/googleStrategy.ts"
-import { employeeRouter } from "./routes/employee.routes.ts";
+import { employeeRouter } from "./routes/employee.routes";
 
 const server = express();
 

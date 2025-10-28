@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { prisma } from "../utils/client.ts";
+import { prisma } from "../utils/client";
 
 cron.schedule("0 0 1 1 *" , async () => {
     console.log("Running Yearly rest leaves");

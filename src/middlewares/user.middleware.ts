@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request , Response , NextFunction } from "express";
-import { generateJwtToken } from "../controllers/user.controller.ts";
-import { ApiError } from "../src/utils/ApiError.ts";
+import { generateJwtToken } from "../controllers/user.controller";
+import { ApiError } from "../utils/ApiError";
 
 export function verifyToken(token:string , secretKey:string){
   return new Promise((resolve , reject) => {
@@ -20,13 +20,13 @@ export async function verifyJwToken(req:Request,res:Response,next:NextFunction){
   const refreshToken = req.cookies.refreshToken;
 
   if(accessToken && refreshToken){
-  const accessTokenDecodedInfo = await verifyToken(accessToken , process.env.ACCESS_TOKEN_SECRET_KEY);
+  const accessTokenDecodedInfo = await verifyToken(accessToken , process.env.ACCESS_TOKEN_SECRET_KEY!);
   if(accessTokenDecodedInfo){
     next();
   }else{
-   const refreshTokenDecodedInfo:any = await verifyToken(refreshToken , process.env.REFRESH_TOKEN_SECRET_KEY);
+   const refreshTokenDecodedInfo:any = await verifyToken(refreshToken , process.env.REFRESH_TOKEN_SECRET_KEY!);
    if(refreshTokenDecodedInfo){
-    const accessToken = await generateJwtToken({fullname : refreshTokenDecodedInfo.fullname , email: refreshTokenDecodedInfo.email}, process.env.ACCESS_TOKEN_SECRET_KEY , 1);
+    const accessToken = await generateJwtToken({fullname : refreshTokenDecodedInfo.fullname , email: refreshTokenDecodedInfo.email}, process.env.ACCESS_TOKEN_SECRET_KEY! , 1);
     res.cookie("accessToken" , accessToken , {
        httpOnly: true ,
        secure: true ,

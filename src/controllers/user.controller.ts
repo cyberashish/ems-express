@@ -1,12 +1,12 @@
 import {Request , Response} from "express";
 import bcrypt, { genSalt } from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { prisma } from "../src/utils/client.ts";
-import { ApiResponse } from "../src/utils/ApiResponse.ts";
-import { ApiError } from "../src/utils/ApiError.ts";
-import { verifyToken } from "../middlewares/user.middleware.ts";
-import { generateSimplePassword } from "../src/utils/generatePassword.ts";
-import { sendEmail } from "../src/utils/sendEmail.ts";
+import { prisma } from "../utils/client";
+import { ApiResponse } from "../utils/ApiResponse";
+import { ApiError } from "../utils/ApiError";
+import { verifyToken } from "../middlewares/user.middleware";
+import { generateSimplePassword } from "../utils/generatePassword";
+import { sendEmail } from "../utils/sendEmail";
 
 
 export  function generateJwtToken(user:{fullname:string , email:string} , secretKey:string , expiry:number){
@@ -44,8 +44,8 @@ export const RegisterUser = async (req:Request,res:Response) => {
                   });
                   if(createdUser){
                     try{
-                        const accessToken = await generateJwtToken({fullname , email} , process.env.ACCESS_TOKEN_SECRET_KEY , 1);
-                        const refreshToken = await generateJwtToken({fullname , email} , process.env.REFRESH_TOKEN_SECRET_KEY , 7);
+                        const accessToken = await generateJwtToken({fullname , email} , process.env.ACCESS_TOKEN_SECRET_KEY! , 1);
+                        const refreshToken = await generateJwtToken({fullname , email} , process.env.REFRESH_TOKEN_SECRET_KEY! , 7);
                         res.cookie("accessToken" , accessToken , {
                             httpOnly: true ,
                             secure: true,
@@ -54,21 +54,21 @@ export const RegisterUser = async (req:Request,res:Response) => {
                             httpOnly: true,
                             secure:false, sameSite:'strict'
                         })
-                    }catch(error){
+                    }catch(error:any){
                        res.status(500).json(new ApiResponse(500 , error.message))
                     }
                     res.status(201).json(new ApiResponse(200 , createdUser , "User registered successfully"))
                   }else{
                     res.status(500).json(new ApiError(500 , "Failed to create user"))
                   }
-               }catch(error){
+               }catch(error:any){
                   res.status(500).json(new ApiError(500 , error.message))
                }
              }else{
                 res.status(409).json(new ApiError(409 , "User already registered"));
              }
 
-           }catch(error){
+           }catch(error:any){
               res.status(500).json(new ApiError(500 , error.message))
            }
         }else{
@@ -91,8 +91,8 @@ export const LoginUser = async (req:Request,res:Response) => {
            const isPasswordValid = await bcrypt.compare(password , user.password);
            if(isPasswordValid){
             try{
-                const accessToken = await generateJwtToken({fullname:user.fullname , email:user.email} , process.env.ACCESS_TOKEN_SECRET_KEY , 1);
-                const refreshToken = await generateJwtToken({fullname:user.fullname , email:user.email} , process.env.REFRESH_TOKEN_SECRET_KEY , 7);
+                const accessToken = await generateJwtToken({fullname:user.fullname , email:user.email} , process.env.ACCESS_TOKEN_SECRET_KEY! , 1);
+                const refreshToken = await generateJwtToken({fullname:user.fullname , email:user.email} , process.env.REFRESH_TOKEN_SECRET_KEY! , 7);
                 res.cookie("accessToken" , accessToken , {
                     httpOnly: true ,
                     secure: true,
@@ -103,7 +103,7 @@ export const LoginUser = async (req:Request,res:Response) => {
                     secure:true,     sameSite: 'none'
                 });
                 res.status(200).json(new ApiResponse(200 , user, "User logged in successfully"))
-            }catch(error){
+            }catch(error:any){
                res.status(500).json(new ApiError(500 , "Failed to generate tokens"))
             }
            }else{
@@ -113,7 +113,7 @@ export const LoginUser = async (req:Request,res:Response) => {
              res.status(404).json(new ApiError(404 , "User not found"))
          }
 
-       }catch(error){
+       }catch(error:any){
          res.status(500).json(new ApiError(500 , error.message))
        }
       }else{
@@ -133,8 +133,8 @@ export const LogoutUser = async (req:Request , res:Response) => {
         secure: true,
         sameSite: 'none'
     });
-       res.status(200).json(new ApiResponse(200,{},"User loggedout successfully!"));
-    }catch(error){
+       res.status(200).json(new ApiResponse(200,{} as any,"User loggedout successfully!"));
+    }catch(error:any){
         res.status(500).json(new ApiError(500 , error.message))
     }
 }
@@ -144,7 +144,7 @@ export const getAuthenticatedUser = async (req:Request , res:Response) => {
       const accessToken = req.cookies.accessToken;
       console.log(accessToken,"andruni token")
       if(accessToken){
-        const userData:any = await verifyToken(accessToken , process.env.ACCESS_TOKEN_SECRET_KEY);
+        const userData:any = await verifyToken(accessToken , process.env.ACCESS_TOKEN_SECRET_KEY!);
         console.log(userData,"ANdruni Baat")
         if(userData){
           const user = await prisma.user.findUnique({
@@ -152,19 +152,19 @@ export const getAuthenticatedUser = async (req:Request , res:Response) => {
               email:userData.email
             }
           })
-         res.status(200).json(new ApiResponse(200 , {...userData , ...user, role:user.role} , "Successfuly fetched authenticated user"));
+         res.status(200).json(new ApiResponse(200 , {...userData , ...user, role:user?.role} , "Successfuly fetched authenticated user"));
         }else{
          res.status(401).json(new ApiError(401 , 'Invalid tokens/unauthorised access'));
         }
       }else{
         res.status(422).json(new ApiError(401 , 'Please provide valid token'));
       }
-     }catch(error){
+     }catch(error:any){
         res.status(401).json(new ApiError(401 , error.message))
      }
 }
 
-export const sendResetLink = async (req, res) => {
+export const sendResetLink = async (req:any, res:any) => {
   const { email } = req.body;
   const user = await prisma.user.findUnique({
     where:{
@@ -174,7 +174,7 @@ export const sendResetLink = async (req, res) => {
 
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET_KEY, {
+  const token = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET_KEY!, {
     expiresIn: "15m",
   });
 
@@ -188,19 +188,19 @@ export const sendResetLink = async (req, res) => {
        <a href="${link}">${link}</a>
        <p>This link expires in 15 minutes.</p>`
     );
-  }catch(error){
+  }catch(error:any){
     console.error("MAIL ERROR:", error);
   }
 
   res.json({ message: "Password reset link sent to email." });
 };
 
-export const resetPassword = async (req, res) => {
+export const resetPassword = async (req:any, res:any) => {
   const { token } = req.params;
   const { password } = req.body;
 
   try {
-    const decoded:any = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY);
+    const decoded:any = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET_KEY!);
     const user = await prisma.user.findUnique({
       where:{
         id:decoded.id
@@ -244,7 +244,7 @@ export const updatePassword = async (req:Request , res:Response) => {
         }
        });
        res.status(200).json(new ApiResponse(200 , updatedUser , "Successfully updated user password!"));
-     }catch(error){
+     }catch(error:any){
       res.status(500).json(new ApiResponse(500 , "Internal server error"));
      }
   }else{
