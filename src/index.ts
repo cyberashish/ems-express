@@ -11,6 +11,8 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from 'cookie-parser';
+import { userRouter } from "./routes/user.routes";
+import { employeeRouter } from "./routes/employee.routes";
 
 
 
@@ -33,12 +35,12 @@ const __dirname =  path.dirname(__filename);
 // server.use(express.static(path.join(__dirname , "public")));
 server.use(cookieParser());
 
-// server.use("/" , userRouter);
-// server.use("/employee" , employeeRouter);
+server.use("/" , userRouter);
+server.use("/employee" , employeeRouter);
 
-server.get("/" , (req,res) => {
-    res.json({title:"Om namo bhagwate vasudevaye namah!"})
-})
+// server.get("/" , (req,res) => {
+//     res.json({title:"Om namo bhagwate vasudevaye namah!"})
+// })
 
 server.listen(PORT,() => {
    console.log(`server started listening at http://localhost:${PORT}`)
